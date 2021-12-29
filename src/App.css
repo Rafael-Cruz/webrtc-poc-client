@@ -29,3 +29,15 @@
 .room-name-container {
   margin-bottom: 20px;
 }
+
+.message-sender {
+  font-weight: bold;
+}
+
+.message-sender.me {
+  color: green;
+}
+
+.message-sender.partner {
+  color: darkslateblue;
+}
