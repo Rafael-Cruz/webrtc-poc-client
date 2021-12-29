@@ -12,16 +12,20 @@ const iceServers = [
   }
 ]
 
+const DATA_CHANNEL_CHAT_LABEL = 'chat'
+
 let socket
 
 let myMediaStream
 let partnerMediaStream
 let connection
+let dataChannel
 
 let roomName
 let isCaller
 
 let callbackTrackReceived
+let callbackMessageReceived
 
 const getSocket = () => {
   if (socket === null) {
@@ -65,6 +69,17 @@ const handleAddStream = (e) => {
 
   partnerMediaStream = e.streams[0]
   callbackTrackReceived(partnerMediaStream)
+}
+
+const handleDataChannelMessage = ({ data }) => {
+  console.log('received data channel message: ', data)
+  callbackMessageReceived(data)
+}
+
+const handleReceiveDataChannel = ({ channel }) => {
+  console.log('receiving remote data channel ', channel)
+  dataChannel = channel
+  dataChannel.onmessage = handleDataChannelMessage
 }
 
 export const createSocket = () => {
@@ -131,6 +146,9 @@ export const createSocket = () => {
 
     connection.addTrack(audioTracks[0], myMediaStream)
     connection.addTrack(videosTracks[0], myMediaStream)
+
+    dataChannel = connection.createDataChannel(DATA_CHANNEL_CHAT_LABEL)
+    dataChannel.onmessage = handleDataChannelMessage
   })
 
   socket.on('offer', async (sdp) => {
@@ -151,6 +169,8 @@ export const createSocket = () => {
 
       connection.addTrack(audioTracks[0], myMediaStream)
       connection.addTrack(videosTracks[0], myMediaStream)
+
+      connection.ondatachannel = handleReceiveDataChannel
 
       await connection.setRemoteDescription(sdp)
 
@@ -218,7 +238,16 @@ export const onPartnerMediaStreamReceived = (callback) => {
   callbackTrackReceived = callback
 }
 
+export const onReceiveMessage = (callback) => {
+  callbackMessageReceived = callback
+}
+
 export const createOrJoinRoom = (roomName) => {
   const socket = getSocket()
   socket.emit("create or join", roomName)
+}
+
+export const sendMessage = (message) => {
+  console.log('sending message via data channel: ', message)
+  dataChannel.send(message)
 }
