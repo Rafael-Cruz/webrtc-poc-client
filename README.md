@@ -2,6 +2,6 @@
 
 Teste da tecnologia WebRTC.
 
-## Variãveis de ambiente
+## Variáveis de ambiente
 
-- `REACT_APP_BE_HOST`: Host da aplicaçâo backend
+- `REACT_APP_BE_HOST`: Host da aplicação backend
