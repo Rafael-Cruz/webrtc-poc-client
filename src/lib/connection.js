@@ -1,14 +1,9 @@
 import { connect, io } from "socket.io-client";
 
-const SERVER_URL = 'http://teste.local:8080'
+const SERVER_URL = process.env.REACT_APP_BE_HOST
 const iceServers = [
   {
     urls: 'stun:stun.l.google.com:19302'
-  },
-  {
-    urls: 'turn:numb.viagenie.ca',
-    credential: 'muazkh',
-    username: 'webrtc@live.com'
   }
 ]
 
